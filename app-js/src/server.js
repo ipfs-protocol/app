@@ -1,4 +1,4 @@
-const path = require('path');
+import path from 'path';
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const express = require('express');
@@ -6,12 +6,21 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const nunjucks = require('nunjucks');
 
+const { sequelize } = require('./dbases/models');
+
 dotenv.config();
 const main = require('./routers/amain');
 
 const server = express();
 
 server.set('port', process.env.APP_PORT || 3000);
+sequelize.sync({ force: false})
+  .then(() => {
+    console.log('데이터 베이스 sequelize 연결')
+  })
+  .catch((err) => {
+    console.error(err);
+  });
 
 server.use('/', main);
 
